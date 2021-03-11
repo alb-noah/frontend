@@ -7,6 +7,8 @@ import {CartModelpublic, CartModelServer} from '../models/cart.model';
 import {BehaviorSubject} from 'rxjs';
 import {NavigationExtras, Router} from '@angular/router';
 import {ProductModelserver} from '../models/product.model';
+import {ToastrModule, ToastrService} from 'ngx-toastr';
+import {NgxSpinnerService} from 'ngx-spinner';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +43,9 @@ private CartDataServer: CartModelServer = {
   constructor(private http: HttpClient,
               private productService: ProductService,
               private orderService: OrderService,
-              private router: Router) {
+              private router: Router,
+              private toast: ToastrService,
+              private spinner: NgxSpinnerService) {
     this.cartTotal$.next(this.CartDataServer.total);
     this.cartData$.next(this.CartDataServer);
 
@@ -100,7 +104,13 @@ private CartDataServer: CartModelServer = {
         localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
         this.cartData$.next({ ... this.CartDataServer});
 
-        // todo display toast notification
+
+        this.toast.success(` الي السلة${prod.name}تم اضافة المنتج `,'Aroduct Added', {
+          timeOut: 1500,
+          progressBar : true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-left'
+        });
 
       }
       // 2. if the cart has some items
@@ -113,15 +123,23 @@ private CartDataServer: CartModelServer = {
             this.CartDataServer.data[index].numInCart = this.CartDataServer.data[index].numInCart
             < prod.quantity ? quantity : prod.quantity;
           } else {
-            this.CartDataServer.data[index].numInCart = this.CartDataServer.data[index].numInCart
-            < prod.quantity ? this.CartDataServer.data[index].numInCart++ : prod.quantity;
+            this.CartDataServer.data[index].numInCart < prod.quantity ? this.CartDataServer.data[index].numInCart++ : prod.quantity;
           }
 
           this.cartDataClient.prodData[index].incart =  this.CartDataServer.data[index].numInCart;
-          // todo display a toast notfication
+          this.CalculateTotal();
+          this.cartDataClient.total = this.CartDataServer.total;
+          localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
+          this.toast.info(` في السلة${prod.name}تم تحديت كمية `,'Product Updated', {
+            timeOut: 1500,
+            progressBar : true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-left'
+          });
 
         }// end of if
-        // b. if that item is not in the cart
+
+        // if product not in the cart array
         else {
           this.CartDataServer.data.push({
             numInCart: 1,
@@ -131,10 +149,16 @@ private CartDataServer: CartModelServer = {
             incart: 1,
             id: prod.id
           });
+          // localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
+          this.toast.success(` الي السلة${prod.name}تم اضافة المنتج `,'product Added', {
+            timeOut: 1500,
+            progressBar : true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-left'
+          });
 
-          // todo display a toast notfication
-
-          // todo calculate total amount
+          //  calculate total amount
+          this.CalculateTotal();
           this.cartDataClient.total = this.CartDataServer.total;
           localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
           this.cartData$.next( { ... this.CartDataServer});
@@ -199,16 +223,16 @@ private CartDataServer: CartModelServer = {
   }
 
   // tslint:disable-next-line:typedef
-  private Calculate() {
-    let total = 0;
+  private CalculateTotal() {
+    let Total = 0;
     this.CartDataServer.data.forEach(p => {
       const {numInCart} = p;
       const {price} = p.product;
 
-      total += numInCart * price;
+      Total += numInCart * price;
     });
 
-    this.CartDataServer.total = total;
+    this.CartDataServer.total = Total;
     this.cartTotal$.next(this.CartDataServer.total);
   }
 
@@ -231,7 +255,9 @@ private CartDataServer: CartModelServer = {
                     total: this.cartDataClient.total
                   }
                 };
-                // todo hide spinner
+                //  hide spinner
+                this.spinner.hide();
+
                 this.router.navigate(['/thankyou'], navigationExtras).then(p => {
                   this.cartDataClient = {total: 0, prodData: [{ incart: 0, id: 0}]};
                   this.cartTotal$.next(0);
@@ -239,6 +265,15 @@ private CartDataServer: CartModelServer = {
                 });
               }
             });
+          });
+        } else {
+          this.spinner.hide();
+          this.router.navigateByUrl('/checkout').then();
+          this.toast.error(` نأسف , فشلت عملية اضافة الطلب الرجاء المحاولة مرة اخري `,'order status', {
+            timeOut: 1500,
+            progressBar : true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-left'
           });
         }
     });
@@ -254,7 +289,6 @@ private CartDataServer: CartModelServer = {
     };
     this.cartData$.next({ ... this.CartDataServer});
   }
-
 
 }
 interface OrderResponse {
