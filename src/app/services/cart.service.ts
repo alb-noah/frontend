@@ -290,6 +290,12 @@ private CartDataServer: CartModelServer = {
     this.cartData$.next({ ... this.CartDataServer});
   }
 
+  CalculateSubTotal(index): number {
+    let subTotal = 0;
+    const  p = this.CartDataServer[index];
+    subTotal = p.product.price * p.numInCart;
+    return subTotal;
+  }
 }
 interface OrderResponse {
   order_id: number;
