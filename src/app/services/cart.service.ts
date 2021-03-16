@@ -237,7 +237,7 @@ private CartDataServer: CartModelServer = {
   }
 
   // tslint:disable-next-line:typedef
-  private CheckOutFromCart(userId: number){
+   CheckOutFromCart(userId: number){
     this.http.post(`${this.serverURL}/orders/payment`, null).subscribe((res: {success: boolean} ) => {
         if (res.success){
           this.resetServerData();
