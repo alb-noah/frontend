@@ -27,6 +27,7 @@ cartData: CartModelServer;
   }
 
   onCheckout() {
+    // @ts-ignore
     this.spinner.show().then(p => {
       this.cartService.CheckOutFromCart(1);
     });
