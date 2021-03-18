@@ -1,4 +1,4 @@
-<div class="my-5">
+<div class="container">
 <!--  when cart is empty-->
   <div class="text-center my-5" *ngIf="cartData.data[0].numInCart === 0">
     <h4> ليس لديك منتجات في السلة</h4>
@@ -33,7 +33,7 @@
                   <div class="value-button" id="decrease" (click)="ChangeQuantity(i, false)">
                     <i class="fa fa-minus"></i>
                   </div>
-                  <iput type="number" id="number" [value]="c.numInCart" readonly [max]="c.product.quantity"/>
+                  <input type="number" id="number" [value]="c.numInCart" readonly [max]="c.product.quantity" />
 
                   <div class="value-button" id="increase" (click)="ChangeQuantity(i, true)">
                     <i class="fa fa-plus"></i>

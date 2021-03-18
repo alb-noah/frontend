@@ -88,8 +88,7 @@
                 <div class="col-md-6">
                   <button class="btn btn-outline-primary btn-sm btn-block" [class.disabled]="p.quantity < 1"
                   [class.btn-outline-danger]="p.quantity < 1"
-                          (click)="AddToCart(p.id)"
-                  >
+                          (click)="AddToCart(p.id)">
                     {{p.quantity < 1 ? "نفذ من المخزن" : "أضف إلي السلة"}}
                   </button>
                 </div>

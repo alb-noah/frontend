@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {ProductService} from './product.service';
 import {OrderService} from './order.service';
 import {environment} from '../../environments/environment';
-import {CartModelpublic, CartModelServer} from '../models/cart.model';
+import {CartModelPublic, CartModelServer} from '../models/cart.model';
 import {BehaviorSubject} from 'rxjs';
 import {NavigationExtras, Router} from '@angular/router';
 import {ProductModelserver} from '../models/product.model';
@@ -17,14 +17,14 @@ export class CartService {
 
   private serverURL = environment.SERVER_URL;
 
-  // data variable to store the cart info on the cient's local storage
+  // data variable to store the cart info on the client's local storage
 
-  private cartDataClient: CartModelpublic = {
-    total: 0,
+  private cartDataClient: CartModelPublic = {
     prodData: [{
       incart: 0,
       id: 0
-    }]
+    }],
+    total: 0
   };
 
 // data variable to store cart info on the server
@@ -40,18 +40,19 @@ private CartDataServer: CartModelServer = {
 
   cartTotal$ = new BehaviorSubject<number>(0);
   cartData$ = new BehaviorSubject<CartModelServer>(this.CartDataServer);
-  constructor(private http: HttpClient,
-              private productService: ProductService,
+  constructor(private productService: ProductService,
               private orderService: OrderService,
+              private httpClient: HttpClient,
               private router: Router,
-              private toast: ToastrService,
-              private spinner: NgxSpinnerService) {
+              private spinner: NgxSpinnerService,
+              private toast: ToastrService
+              ) {
     this.cartTotal$.next(this.CartDataServer.total);
     this.cartData$.next(this.CartDataServer);
 
     // Get the info rom local storage (f any)
 
-    let info: CartModelpublic = JSON.parse(localStorage.getItem('cart'));
+    let info: CartModelPublic = JSON.parse(localStorage.getItem('cart'));
 
     // CHECK IF THE INFO VARIABLE IS NULL OR HAS SOME DATA IN IT
 
@@ -63,11 +64,12 @@ private CartDataServer: CartModelServer = {
       // loop through each entry and put it in the cartDataServer object
       this.cartDataClient.prodData.forEach(p => {
         this.productService.getSingleProduct(p.id).subscribe((actualProductInfo: ProductModelserver) => {
-           if (this.CartDataServer.data[0].numInCart !== 0){
+           if (this.CartDataServer.data[0].numInCart === 0){
               this.CartDataServer[0].numInCart = p.incart;
               this.CartDataServer[0].product = actualProductInfo;
 
-              // todo create calculate total function and replace it here
+              //  create calculate total function and replace it here
+             this.CalculateTotal();
               this.cartDataClient.total = this.CartDataServer.total;
               localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
            } else {
@@ -77,11 +79,12 @@ private CartDataServer: CartModelServer = {
                product: actualProductInfo
              });
 
-             // todo create calculate total function and replace it here
+             // create calculate total function and replace it here
+             this.CalculateTotal();
              this.cartDataClient.total = this.CartDataServer.total;
              localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
            }
-           this.cartData$.next({... this.CartDataServer});
+           this.cartData$.next({...this.CartDataServer});
         });
       });
 
@@ -93,26 +96,28 @@ private CartDataServer: CartModelServer = {
   AddProductToCart(id: number, quantity ?: number){
     this.productService.getSingleProduct(id).subscribe(prod => {
       // 1. if the cart is empty
-      if (this.CartDataServer[0].product === undefined){
+      if (this.CartDataServer.data[0].product === undefined){
         this.CartDataServer.data[0].product = prod;
         this.CartDataServer.data[0].numInCart = quantity !== undefined ? quantity : 1;
 
-        // todo calculate total amount
+        // calculate total amount
+        this.CalculateTotal();
         this.cartDataClient.prodData[0].incart = this.CartDataServer.data[0].numInCart;
         this.cartDataClient.prodData[0].id = prod.id;
         this.cartDataClient.total = this.CartDataServer.total;
         localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
-        this.cartData$.next({ ... this.CartDataServer});
+        this.cartData$.next({...this.CartDataServer});
 
 
-        this.toast.success(` الي السلة${prod.name}تم اضافة المنتج `,'Aroduct Added', {
+        this.toast.success(` الي السلة${prod.name}تم اضافة المنتج `,'product Added', {
           timeOut: 1500,
           progressBar : true,
           progressAnimation: 'increasing',
           positionClass: 'toast-top-left'
         });
 
-      }
+      }//end of if
+
       // 2. if the cart has some items
       else {
         let  index = this.CartDataServer.data.findIndex( p => p.product.id === prod.id); // -1 or positive value
@@ -128,8 +133,8 @@ private CartDataServer: CartModelServer = {
 
           this.cartDataClient.prodData[index].incart =  this.CartDataServer.data[index].numInCart;
           this.CalculateTotal();
-          this.cartDataClient.total = this.CartDataServer.total;
-          localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
+          // this.cartDataClient.total = this.CartDataServer.total;
+          // localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
           this.toast.info(` في السلة${prod.name}تم تحديت كمية `,'Product Updated', {
             timeOut: 1500,
             progressBar : true,
@@ -161,7 +166,7 @@ private CartDataServer: CartModelServer = {
           this.CalculateTotal();
           this.cartDataClient.total = this.CartDataServer.total;
           localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
-          this.cartData$.next( { ... this.CartDataServer});
+          this.cartData$.next( {...this.CartDataServer});
         } // end of else
       }
     });
@@ -174,20 +179,23 @@ private CartDataServer: CartModelServer = {
       data.numInCart < data.product.quantity ? data.numInCart++ : data.product.quantity;
       this.cartDataClient.prodData[index].incart = data.numInCart;
 
-      // todo calculate total amount
+
+      this.CalculateTotal();
       this.cartDataClient.total = this.CartDataServer.total;
+      this.cartData$.next( {...this.CartDataServer});
       localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
-      this.cartData$.next( { ... this.CartDataServer});
     } else {
       data.numInCart--;
 
       if (data.numInCart < 1){
-        // todo Delete the product from cart
-        this.cartData$.next( { ... this.CartDataServer});
+
+        this.DeleteProductFromCart(index);
+        this.cartData$.next( {...this.CartDataServer});
       } else {
-        this.cartData$.next( { ... this.CartDataServer});
+        this.cartData$.next( {...this.CartDataServer});
         this.cartDataClient.prodData[index].incart = data.numInCart;
-        // todo calculate total amount
+
+        this.CalculateTotal();
         this.cartDataClient.total = this.CartDataServer.total;
         localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
       }
@@ -195,10 +203,10 @@ private CartDataServer: CartModelServer = {
   }
   // tslint:disable-next-line:typedef
   DeleteProductFromCart(index: number){
-    if (window.confirm('هل انت متاكد من رغبتك في حذف المنتج ؟')){
+    if (window.confirm('هل انت متاكد من رغبتك في إزالة المنتج من السلة ؟')){
       this.CartDataServer.data.splice(index, 1);
       this.cartDataClient.prodData.splice(index, 1);
-      // todo calculate total amount
+      this.CalculateTotal();
       this.cartDataClient.total = this.CartDataServer.total;
 
       if (this.cartDataClient.total === 0) {
@@ -211,9 +219,9 @@ private CartDataServer: CartModelServer = {
 
       if (this.CartDataServer.total === 0) {
         this.CartDataServer = {total: 0, data: [{numInCart: 0, product: undefined}]};
-        this.cartData$.next( { ... this.CartDataServer});
+        this.cartData$.next( {...this.CartDataServer});
       } else {
-        this.cartData$.next( { ... this.CartDataServer});
+        this.cartData$.next( {...this.CartDataServer});
       }
     }
     else {
@@ -238,10 +246,10 @@ private CartDataServer: CartModelServer = {
 
   // tslint:disable-next-line:typedef
    CheckOutFromCart(userId: number){
-    this.http.post(`${this.serverURL}/orders/payment`, null).subscribe((res: {success: boolean} ) => {
+    this.httpClient.post(`${this.serverURL}orders/payment`, null).subscribe((res: {success: boolean} ) => {
         if (res.success){
           this.resetServerData();
-          this.http.post(`${this.serverURL}/orders/new`, {
+          this.httpClient.post(`${this.serverURL}orders/new`, {
             userId: userId,
             products: this.cartDataClient.prodData
           }).subscribe((data: OrderResponse) => {
@@ -256,8 +264,8 @@ private CartDataServer: CartModelServer = {
                   }
                 };
                 //  hide spinner
-                this.spinner.hide();
-
+                // @ts-ignore
+                this.spinner.hide().then();
                 this.router.navigate(['/thankyou'], navigationExtras).then(p => {
                   this.cartDataClient = {total: 0, prodData: [{ incart: 0, id: 0}]};
                   this.cartTotal$.next(0);
@@ -267,7 +275,8 @@ private CartDataServer: CartModelServer = {
             });
           });
         } else {
-          this.spinner.hide();
+          // @ts-ignore
+          this.spinner.hide().then();
           this.router.navigateByUrl('/checkout').then();
           this.toast.error(` نأسف , فشلت عملية اضافة الطلب الرجاء المحاولة مرة اخري `,'order status', {
             timeOut: 1500,
@@ -287,12 +296,12 @@ private CartDataServer: CartModelServer = {
         product: undefined
       }]
     };
-    this.cartData$.next({ ... this.CartDataServer});
+    this.cartData$.next({...this.CartDataServer});
   }
 
   CalculateSubTotal(index): number {
     let subTotal = 0;
-    const  p = this.CartDataServer[index];
+    const  p = this.CartDataServer.data[index];
     subTotal = p.product.price * p.numInCart;
     return subTotal;
   }

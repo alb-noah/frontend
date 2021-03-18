@@ -13,13 +13,14 @@ export class HomeComponent implements OnInit {
 
   products: ProductModelserver[] = [];
 
-  constructor(private productservice: ProductService,
+  constructor(private productService: ProductService,
               private router: Router,
-              private cartservice: CartService) { }
+              private cartService: CartService) { }
 
   ngOnInit(): void {
-    this.productservice.getAllproducts().subscribe((prods: ServerResponse) => {
+    this.productService.getAllproducts().subscribe((prods: ServerResponse) => {
         this.products = prods.products;
+        console.log(this.products);
     });
   }
 
@@ -28,6 +29,6 @@ export class HomeComponent implements OnInit {
   }
 
   AddToCart(id: number) {
-    this.cartservice.AddProductToCart(id);
+    this.cartService.AddProductToCart(id);
   }
 }

@@ -10,15 +10,15 @@ import {ProductModelserver, ServerResponse} from '../models/product.model';
 })
 export class ProductService {
 
- private SERVER_URL = environment.SERVER_URL;
+ private url = environment.SERVER_URL;
   constructor(private http: HttpClient) { }
 
   // FETCH ALL PRODUCT FROM BACKEND
 
-  getAllproducts(numberOfResults = 10): Observable<ServerResponse>{
-   return this.http.get<ServerResponse>(this.SERVER_URL + '/products', {
+  getAllproducts(limitOfResults = 10): Observable<ServerResponse>{
+   return this.http.get<ServerResponse>(this.url + 'products', {
      params: {
-       limit: numberOfResults.toString()
+       limit: limitOfResults.toString()
      }
    });
 
@@ -26,12 +26,12 @@ export class ProductService {
 // get single product from server
 
   getSingleProduct(id: number): Observable<ProductModelserver>{
-  return this.http.get<ProductModelserver>(this.SERVER_URL + '/products/' + id);
+  return this.http.get<ProductModelserver>(this.url + 'products/' + id);
   }
 
   // get product from one category
   getProductsFromCategory(catName: string): Observable<ProductModelserver[]> {
-   return this.http.get<ProductModelserver[]>(this.SERVER_URL + '/products/category/' + catName);
+   return this.http.get<ProductModelserver[]>(this.url + '/products/category/' + catName);
   }
 }
 

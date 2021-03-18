@@ -18,9 +18,10 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
   @ViewChild('quantity') quantityInput;
 
-  constructor(private prodcutService: ProductService,
-              private cartService: CartService,
-              private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,
+              private productService: ProductService,
+              private cartService: CartService
+              ) { }
 
   ngOnInit(): void {
     this.route.paramMap.pipe(
@@ -31,7 +32,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
     )
       .subscribe( prodId => {
         this.id = prodId;
-        this.prodcutService.getSingleProduct(this.id).subscribe(prod =>{
+        this.productService.getSingleProduct(this.id).subscribe(prod =>{
           this.product = prod;
           if (prod.image !== null){
             this.thumbImages = prod.image.split(';');
@@ -72,11 +73,15 @@ export class ProductComponent implements OnInit, AfterViewInit {
       ]
     });
 
-    // Pr oduct img zoom
+    // Pr poduct img zoom
     var zoomMainProduct = document.getElementById('product-main-img');
     if (zoomMainProduct) {
       $('#product-main-img .product-preview').zoom();
     }
+  }
+
+  addToCart(id: number) {
+    this.cartService.AddProductToCart(id, this.quantityInput.nativeElement.value);
   }
 
   increase() {
@@ -96,8 +101,8 @@ export class ProductComponent implements OnInit, AfterViewInit {
     if (this.product.quantity > 0){
       value--;
 
-      if(value <= 1){
-        value =1;
+      if(value <= 0){
+        value = 0;
       }
 
     } else { return; }
@@ -105,7 +110,5 @@ export class ProductComponent implements OnInit, AfterViewInit {
     this.quantityInput.nativeElement.value = value.toString();
   }
 
-  addToCart(id: number) {
-    this.cartService.AddProductToCart(id, this.quantityInput.nativeElement.value);
-  }
+
 }
