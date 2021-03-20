@@ -4,7 +4,7 @@
   color="#fff"
   type="ball-scale-multiple"
 >
-  <p style="font-size: 20px; color: white">Loading...</p>
+  <p style="font-size: 20px; color: white"> ... يتم معالجة طلبك ,الرجاء الانتظار</p>
 </ngx-spinner>
 
 <div class="section" *ngIf="cartTotal > 0">
@@ -16,33 +16,43 @@
       <div class="col-md-7">
         <!-- Billing Details -->
         <div class="billing-details">
-          <div class="section-title">
-            <h3 class="title">Billing address</h3>
+          <div class="section-title text-right">
+            <h3 class="title">تفاصيل عنوان الشحن</h3>
           </div>
           <div class="form-group">
-            <input class="input" type="text" name="first-name" placeholder="First Name">
+            <input class="input" type="text" name="first-name" placeholder="الاسم">
           </div>
           <div class="form-group">
-            <input class="input" type="text" name="last-name" placeholder="Last Name">
+            <input class="input" type="tel" placeholder="رقم هاتف المستلم" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
           </div>
           <div class="form-group">
-            <input class="input" type="email" name="email" placeholder="Email">
+            <select class="input">
+              <option disabled selected>إختر المدينة</option>
+              <option>الجفرة</option>
+              <option>الشاطئ</option>
+              <option>تمنهنت</option>
+              <option>سبها</option>
+            </select>
           </div>
           <div class="form-group">
-            <input class="input" type="text" name="address" placeholder="Address">
+            <input class="input" type="text" name="address" placeholder="الحي السكني">
           </div>
           <div class="form-group">
-            <input class="input" type="text" name="city" placeholder="City">
+            <input class="input" type="text" name="city" placeholder="أقرب نقطة دالة">
           </div>
           <div class="form-group">
-            <input class="input" type="text" name="country" placeholder="Country">
+            <select class="input">
+              <option disabled selected>طريقة الدفع</option>
+              <option>نقدي</option>
+              <option>خدمة كاش</option>
+            </select>
           </div>
-          <div class="form-group">
-            <input class="input" type="text" name="zip-code" placeholder="ZIP Code">
-          </div>
-          <div class="form-group">
-            <input class="input" type="tel" name="tel" placeholder="Telephone">
-          </div>
+<!--          <div class="form-group">-->
+<!--            <input class="input" type="text" name="zip-code" placeholder="ZIP Code">-->
+<!--          </div>-->
+<!--          <div class="form-group">-->
+<!--            <input class="input" type="tel" name="tel" placeholder="Telephone">-->
+<!--          </div>-->
           <div class="form-group">
             <div class="input-checkbox">
               <input type="checkbox" id="create-account">
@@ -51,7 +61,7 @@
                 Create Account?
               </label>
               <div class="caption">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p>
+<!--                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p>-->
                 <input class="input" type="password" name="password" placeholder="Enter Your Password">
               </div>
             </div>
@@ -61,9 +71,9 @@
 
         <!-- Shiping Details -->
         <div class="shiping-details">
-          <div class="section-title">
-            <h3 class="title">Shiping address</h3>
-          </div>
+<!--          <div class="section-title">-->
+<!--            <h3 class="title"></h3>-->
+<!--          </div>-->
           <div class="input-checkbox">
             <input type="checkbox" id="shiping-address">
             <label for="shiping-address">
@@ -102,7 +112,7 @@
 
         <!-- Order notes -->
         <div class="order-notes">
-          <textarea class="input" placeholder="Order Notes"></textarea>
+          <textarea class="input" placeholder="أضف اي تفاصيل او ملاحظات"></textarea>
         </div>
         <!-- /Order notes -->
       </div>
@@ -110,36 +120,36 @@
       <!-- Order Details -->
       <div class="col-md-5 order-details">
         <div class="section-title text-center">
-          <h3 class="title">Your Order</h3>
+          <h3 class="title">تفاصيل الطلب</h3>
         </div>
         <div class="order-summary">
           <div class="order-col">
-            <div><strong>PRODUCT</strong></div>
-            <div><strong>TOTAL</strong></div>
+            <div><strong>المنتج</strong></div>
+            <div><strong>القيمة</strong></div>
           </div>
           <div class="order-products" *ngFor="let c of cartData.data">
             <div class="order-col">
               <div>{{c.numInCart}} * {{c.product.name}}</div>
-              <div>{{c.product.price * c.numInCart | currency: 'LYD'}}}</div>
+              <div>{{c.product.price * c.numInCart | currency: 'د.ل'}}</div>
             </div>
           </div>
           <div class="order-col">
-            <div>Shiping</div>
-            <div><strong>FREE</strong></div>
+            <div>التوصيل</div>
+            <div> <strong> للاطلاع علي اسعار التوصيل</strong> <a href="#"> هنا </a></div>
           </div>
           <div class="order-col">
-            <div><strong>TOTAL</strong></div>
-            <div><strong class="order-total">{{cartTotal | currency: 'LYD'}}</strong></div>
+            <div><strong>المجموع</strong></div>
+            <div><strong class="order-total">{{cartTotal | currency: 'د.ل '}}</strong></div>
           </div>
         </div>
 
-        <div class="input-checkbox">
-          <input type="checkbox" id="terms">
-          <label for="terms">
-            <span></span>
-            I've read and accept the <a href="#">terms & conditions</a>
-          </label>
-        </div>
+<!--        <div class="input-checkbox">-->
+<!--          <input type="checkbox" id="terms">-->
+<!--          <label for="terms">-->
+<!--            <span></span>-->
+<!--            I've read and accept the <a href="#">terms & conditions</a>-->
+<!--          </label>-->
+<!--        </div>-->
         <button  class="btn btn-outline-danger btn-sm my-2 btn-block order-submit " (click)="onCheckout()">تأكيد الطلب</button>
       </div>
       <!-- /Order Details -->

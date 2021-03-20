@@ -109,8 +109,8 @@ private CartDataServer: CartModelServer = {
         this.cartData$.next({...this.CartDataServer});
 
 
-        this.toast.success(` الي السلة${prod.name}تم اضافة المنتج `,'product Added', {
-          timeOut: 1500,
+        this.toast.success(` تم إضافة ${ prod.name } الي سلة المشتريات  `,'product Added', {
+          timeOut: 2000,
           progressBar : true,
           progressAnimation: 'increasing',
           positionClass: 'toast-top-left'

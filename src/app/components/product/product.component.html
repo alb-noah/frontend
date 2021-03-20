@@ -77,10 +77,10 @@
               <i class="fa fa-star"></i>
               <i class="fa fa-star-o"></i>
             </div>
-            <a class="review-link" href="#">10 Review(s) | Add your review</a>
+<!--            <a class="review-link" href="#">10 Review(s) | Add your review</a>-->
           </div>
           <div>
-            <h3 class="product-price">{{product.price | currency: 'LYD'}} <del class="product-old-price">$990.00</del></h3>
+            <h3 class="product-price">{{product.price | currency: 'د.ل '}}</h3>
             <span class="product-available">In Stock</span>
           </div>
           <p>{{product.description}}</p>
@@ -91,16 +91,16 @@
             <div class="qty-label">
               Qty
               <div class="input-number">
-                <input type="number" [max]="product?.quantity >= 1 ? product?.quantity : 0"
-                       [min]="1"
-                readonly
-                #quantity
-                value="{{product?.quantity >= 1 ? 1: 0}}}">
+                <input #quantity
+                       [max]="product ?.quantity"
+                       [min]="product?.quantity >= 1 ? product?.quantity : 0"
+                readonly type="number"
+                       value="{{product?.quantity >= 1 ? 1: 0}}}">
                 <span class="qty-up" (click)="increase()">+</span>
                 <span class="qty-down" (click)="decrease()">-</span>
               </div>
             </div>
-            <button class="add-to-cart-btn" (click)="addToCart(product?.id)"><i class="fa fa-shopping-cart"></i> أضف إلي السلة </button>
+            <button class="add-to-cart-btn" (click)="addToCart(product?.id)" *ngIf="product?.quantity >= 1"><i class="fa fa-shopping-cart"></i> أضف إلي السلة </button>
           </div>
 
           <ul class="product-btns">
@@ -108,11 +108,11 @@
             <li><a href="#"><i class="fa fa-exchange"></i> add to compare</a></li>
           </ul>
 
-          <ul class="product-links">
-            <li>Category:</li>
-            <li><a href="#">Headphones</a></li>
-            <li><a href="#">Accessories</a></li>
-          </ul>
+<!--          <ul class="product-links">-->
+<!--            <li>Category:</li>-->
+<!--            <li><a href="#">Headphones</a></li>-->
+<!--            <li><a href="#">Accessories</a></li>-->
+<!--          </ul>-->
 
           <ul class="product-links">
             <li>Share:</li>

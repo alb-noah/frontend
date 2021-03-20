@@ -76,7 +76,7 @@
                     </div>
                     <div class="product-body">
                       <h3 class="product-name"><a href="#">{{c.product.name}}</a></h3>
-                      <h4 class="product-price"><span class="qty">{{c.numInCart}} *</span>{{c.product?.price | currency:'LYD'}}</h4>
+                      <h4 class="product-price"><span class="qty">{{c.numInCart}} *</span>{{c.product?.price | currency:'د.ل '}}</h4>
                     </div>
                     <button class="delete" (click)="cartService.DeleteProductFromCart(i)"><i class="fa fa-close"></i></button>
                   </div>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="cart-summary">
                   <small>{{cartData.data[0].numInCart !==0 ? cartData.data.length: 0}}العناصر المختار</small>
-                  <h5>{{ cartTotal | currency: 'LYD '}} :المجموع  </h5>
+                  <h5>{{ cartTotal | currency: ' د.ل '}} :المجموع  </h5>
                 </div>
                 <div class="cart-btns">
                   <a routerLink="/cart">فحص السلة</a>

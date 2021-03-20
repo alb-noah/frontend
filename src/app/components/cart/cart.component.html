@@ -12,9 +12,9 @@
 <div class="row">
     <div class="col-md-4">
       <table class="table">
-          <thead class="table-dark">
+          <thead class="table-dark" style="text-align: center">
           <th>الصورة</th>
-          <th>العنوان</th>
+          <th>المنتج</th>
           <th>السعر</th>
           <th>الكمية المطلوبة</th>
           <th>المجموع</th>
@@ -24,10 +24,10 @@
             <tr *ngFor="let c of cartData.data; let i=index">
                 <td class="d-flex align-items-center justify-content-around">
                     <img [src]="c.product.image" alt="{{c.product.name}}" height="60"  class="order-1">
-                    <span class="text-danger mr-md-2" style="cursor: pointer;"><i class="fa fa-trash" (click)="cartService.DeleteProductFromCart(i)"></i></span>
+                    <span class="text-danger" style="cursor: pointer;"><i class="fa fa-trash" (click)="cartService.DeleteProductFromCart(i)"></i></span>
                 </td>
               <td><p>{{c.product.name}}</p></td>
-              <td><p>{{c.product.price | currency: 'LYD'}}</p></td>
+              <td><p>{{c.product.price | currency: 'LYD '}}</p></td>
               <td>
                 <form>
                   <div class="value-button" id="decrease" (click)="ChangeQuantity(i, false)">
@@ -41,7 +41,7 @@
                 </form>
               </td>
 
-              <td><p>{{cartService.CalculateSubTotal(i) | currency: 'LYD'}}</p></td>
+              <td><p>{{cartService.CalculateSubTotal(i) | currency: 'LYD '}}</p></td>
             </tr>
 
           <tr class="border-0">
@@ -49,7 +49,7 @@
             <td></td>
             <td></td>
             <td>المجموع الكلي</td>
-            <td>{{cartTotal | currency:'LYD'}}</td>
+            <td>{{cartTotal | currency:'LYD '}}</td>
           </tr>
           </tbody>
       </table>
